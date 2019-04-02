@@ -1,4 +1,4 @@
-# preCICE Tutorials
+# preCICE Tutorials + Dockerfiles
 
 This repository contains ready-to-run tutorial cases for the coupling library [preCICE](http://www.precice.org/).
 
