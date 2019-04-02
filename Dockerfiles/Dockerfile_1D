@@ -1,0 +1,13 @@
+FROM ubuntu:18.04
+
+# Updating
+RUN apt-get -y update && apt-get -y upgrade && apt-get -y install wget git
+RUN apt-get -y install build-essential cmake libeigen3-dev libxml2-dev petsc-dev libboost-all-dev python-dev python-numpy
+
+# Installing Precice
+RUN wget https://github.com/precice/precice/releases/download/v1.4.0/libprecice1.4.0-bionic.deb
+RUN dpkg -i libprecice1.4.0-bionic.deb
+RUN git clone https://github.com/precice/elastictube1d.git
+WORKDIR elastictube1d
+RUN cmake .
+RUN make

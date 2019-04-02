@@ -1,0 +1,33 @@
+FROM ubuntu:18.04
+
+# Updating
+RUN apt-get -y update && apt-get -y upgrade && apt-get -y install wget git gnupg gnupg2 gnupg1 software-properties-common nano
+# Adding the Keys for open foam
+RUN sh -c "wget -qO - http://dl.openfoam.org/gpg.key | apt-key add -" 
+RUN add-apt-repository http://dl.openfoam.org/ubuntu
+RUN apt-get update
+RUN apt-get -y install openfoam5
+RUN echo "source /opt/openfoam5/etc/bashrc" > ~/.bashrc
+RUN /bin/bash -c "source ~/.bashrc"
+
+# Setting up further depencies for precice later
+RUN apt-get -y install build-essential cmake libeigen3-dev libxml2-dev petsc-dev libboost-all-dev python-dev python-numpy
+
+# Preparing the open foam adapter 
+# install yaml cpp
+RUN git clone https://github.com/jbeder/yaml-cpp.git
+WORKDIR yaml-cpp
+WORKDIR build
+RUN cmake -DBUILD_SHARED_LIBS=ON ..
+RUN make && make install
+
+# Install precice
+WORKDIR /
+RUN wget https://github.com/precice/precice/releases/download/v1.4.0/libprecice1.4.0-bionic.deb
+RUN dpkg -i libprecice1.4.0-bionic.deb
+
+# Open Foarm Adapter
+RUN git clone https://github.com/precice/openfoam-adapter.git
+WORKDIR openfoam-adapter
+RUN ["/bin/bash", "-c", "source ~/.bashrc; ./Allwmake"]
+WORKDIR tutorials/CHT/flow-over-plate/buoyantPimpleFoam-laplacianFoam
